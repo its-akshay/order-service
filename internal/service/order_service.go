@@ -39,3 +39,23 @@ func (s *OrderService) CreateOrder(ctx context.Context, amount float64) (*models
 
 	return order, nil
 }
+
+func (s *OrderService) GetOrder(ctx context.Context, id string) (*models.Order, error) {
+
+	data, err := s.Redis.Get(ctx, "order:"+id)
+	if err != nil {
+		return nil, err
+	}
+
+	if data == "" {
+		return nil, nil // not found
+	}
+
+	var order models.Order
+	if err := json.Unmarshal([]byte(data), &order); err != nil {
+		return nil, err
+	}
+
+	return &order, nil
+}
+

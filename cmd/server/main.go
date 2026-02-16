@@ -24,6 +24,9 @@ func main() {
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	e.POST("/orders", orderHandler.CreateOrder)
+	
+	e.GET("/orders/:id", orderHandler.GetOrder)
+
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
