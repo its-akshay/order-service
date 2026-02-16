@@ -23,17 +23,13 @@ func (s *OrderService) CreateOrder(ctx context.Context, amount float64) (*models
 	order := &models.Order{
 		ID:        uuid.New().String(),
 		Amount:    amount,
-		Status:    "created",
+		Status:    "pending",
 		CreatedAt: time.Now(),
 	}
 
-	data, err := json.Marshal(order)
-	if err != nil {
-		return nil, err
-	}
+	data, _ := json.Marshal(order)
 
-	err = s.Redis.Set(ctx, "order:"+order.ID, string(data))
-	if err != nil {
+	if err := s.Redis.Set(ctx, "order:"+order.ID, string(data)); err != nil {
 		return nil, err
 	}
 
@@ -59,3 +55,19 @@ func (s *OrderService) GetOrder(ctx context.Context, id string) (*models.Order, 
 	return &order, nil
 }
 
+func (s *OrderService) UpdateOrderStatus(ctx context.Context, id, status string) error {
+
+	order, err := s.GetOrder(ctx, id)
+	if err != nil || order == nil {
+		return err
+	}
+
+	order.Status = status
+
+	data, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+
+	return s.Redis.Set(ctx, "order:"+id, string(data))
+}
