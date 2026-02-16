@@ -46,6 +46,9 @@ e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	e.POST("/orders", orderHandler.CreateOrder)
+	
+	e.GET("/orders/:id", orderHandler.GetOrder)
+
 
 	e.GET("/orders/:id", orderHandler.GetOrder)
 
