@@ -21,5 +21,9 @@ func (r *RedisClient) Set(ctx context.Context, key string, value string) error {
 }
 
 func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
-	return r.Client.Get(ctx, key).Result()
+	val, err := r.Client.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return "", nil // key not found
+	}
+	return val, err
 }
